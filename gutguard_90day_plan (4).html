@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gutguard — 90-Day Planning System</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0A2A5E;--blue:#1565C0;--blue-a:#1E88E5;
+  --sky:#E3F0FB;--white:#FFF;--off:#F4F7FB;
+  --border:#C8D8EE;--muted:#5A7099;--dark:#0D1B35;
+  --gold:#E8A020;--success:#1A7A4A;--danger:#C0392B;--text:#1A2A4A;
+  --c-m:#1A7A4A;--c-l:#1565C0;--c-s:#6A3A9A;--c-p:#C07010;--c-o:#C0392B;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--off);color:var(--text);min-height:100vh}
+
+/* HEADER */
+.hdr{background:var(--navy);position:sticky;top:0;z-index:400;border-bottom:3px solid var(--blue-a)}
+.hdr-inner{max-width:1100px;margin:0 auto;padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.logo{font-family:'Barlow Condensed',sans-serif;font-size:1.75rem;font-weight:800;color:#fff;letter-spacing:-.01em}
+.logo span{color:var(--blue-a)}
+.logo-sub{font-size:.58rem;color:#8AAED4;letter-spacing:.1em;text-transform:uppercase;margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:10px}
+.ref{font-size:.58rem;color:#8AAED4;letter-spacing:.08em;text-transform:uppercase;text-align:right}
+.pill{display:inline-block;color:#fff;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;margin-top:3px}
+.pill-r{background:var(--danger)}.pill-b{background:var(--blue-a)}
+.back-btn{display:none;align-items:center;gap:5px;padding:5px 11px;border:1px solid #3A5A90;border-radius:3px;background:transparent;color:#8AAED4;font-family:'Barlow',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.back-btn:hover{background:#1A3A6A;color:#fff}
+
+.memo-strip{background:#061E45;border-bottom:1px solid #122650;padding:.45rem 1.5rem}
+.memo-strip-inner{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:.4rem 1.75rem}
+.mi{font-size:.65rem;color:#8AAED4;letter-spacing:.05em}
+.mi strong{color:#fff;font-weight:600}
+
+/* ── MAIN SCREEN SYSTEM ── */
+.screen{display:none}
+.screen.active{display:block;animation:fadeUp .25s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* CHOOSER */
+#sc-home{max-width:1100px;margin:0 auto;padding:2.5rem 1.5rem 4rem}
+.ch-head{margin-bottom:1.75rem;padding-left:1rem;border-left:4px solid var(--blue-a)}
+.ch-head h1{font-family:'Barlow Condensed',sans-serif;font-size:1.85rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.ch-head p{font-size:.82rem;color:var(--muted);margin-top:.35rem;font-style:italic}
+
+.memo-box{background:#fff;border:1px solid var(--border);border-left:4px solid var(--navy);border-radius:3px;padding:1rem 1.3rem;margin-bottom:1.75rem;font-size:.82rem;line-height:1.65}
+.memo-box strong{color:var(--navy);font-weight:600}
+.mb-lbl{font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+
+.step-bar{display:flex;overflow-x:auto;margin-bottom:2rem;border:1px solid var(--border);border-radius:3px;background:#fff}
+.step-item{flex:1;min-width:110px;padding:.65rem .75rem;text-align:center;border-right:1px solid var(--border)}
+.step-item:last-child{border-right:none}
+.s-num{display:block;font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--blue-a);margin-bottom:2px}
+.s-name{font-size:.68rem;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.04em}
+
+.sec-lbl{font-size:.63rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem;display:flex;align-items:center;gap:8px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.flow-chain{background:#fff;border:1px solid var(--border);border-radius:3px;padding:.875rem 1.2rem;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;font-size:.78rem;margin-bottom:1.75rem}
+.fc-node{display:flex;align-items:center;gap:.4rem}
+.fc-badge{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:2px;cursor:pointer;transition:all .15s;border:1px solid transparent}
+.fc-badge:hover{transform:translateY(-2px);box-shadow:0 3px 10px rgba(0,0,0,.15)}
+.fc-arrow{color:var(--border);font-size:1rem;font-weight:700}
+.fc-m{background:#E8F5EE;color:var(--c-m);border-color:#B8DEC8}
+.fc-l{background:#E8EFF8;color:var(--c-l);border-color:#B8CFF0}
+.fc-s{background:#F0E8F8;color:var(--c-s);border-color:#D0B8E8}
+.fc-p{background:#FDF0E0;color:var(--c-p);border-color:#E8CFA0}
+.fc-o{background:#FDE8E8;color:var(--c-o);border-color:#E8B8B8}
+
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:11px;margin-bottom:1.75rem}
+.tc{background:#fff;border:1px solid var(--border);border-top:3px solid var(--border);border-radius:3px;padding:1.4rem 1.1rem 1.1rem;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
+.tc::before{content:'';position:absolute;inset:0;background:var(--sky);opacity:0;transition:opacity .2s}
+.tc:hover::before{opacity:1}
+.tc:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(10,42,94,.12)}
+.tc>*{position:relative}
+.tc-m{border-top-color:var(--c-m)}.tc-l{border-top-color:var(--c-l)}
+.tc-s{border-top-color:var(--c-s)}.tc-p{border-top-color:var(--c-p)}.tc-o{border-top-color:var(--c-o)}
+.t-icon{font-size:1.5rem;margin-bottom:.5rem;display:block}
+.t-name{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--navy);margin-bottom:.3rem}
+.t-desc{font-size:.7rem;color:var(--muted);line-height:1.5}
+.t-badge{display:inline-block;margin-top:.6rem;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.bm{background:#E8F5EE;color:var(--c-m)}.bl{background:#E8EFF8;color:var(--c-l)}
+.bs{background:#F0E8F8;color:var(--c-s)}.bp{background:#FDF0E0;color:var(--c-p)}.bo{background:#FDE8E8;color:var(--c-o)}
+
+.notice{border-radius:3px;padding:.8rem 1.1rem;font-size:.78rem;line-height:1.6;margin-bottom:.875rem;border:1px solid var(--border)}
+.notice strong{font-weight:600;color:var(--navy)}
+.n-info{background:var(--sky);border-left:3px solid var(--blue-a)}
+.n-warn{background:#FEF5E7;border-left:3px solid var(--gold)}
+.n-danger{background:#FDE8E8;border-left:3px solid var(--danger);color:var(--danger)}
+.n-danger strong{color:var(--danger)}
+.n-success{background:#E8F5EE;border-left:3px solid var(--success)}
+
+/* ── FORM SCREEN ── */
+#sc-form .fw{max-width:1100px;margin:0 auto;padding:2rem 1.5rem 4rem}
+.form-banner{border-radius:3px;padding:1.1rem 1.4rem;margin-bottom:1.5rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.form-banner.m{background:var(--c-m)}.form-banner.leader{background:var(--c-l)}
+.form-banner.squad{background:var(--c-s)}.form-banner.platoon{background:var(--c-p)}.form-banner.o1{background:var(--c-o)}
+.fb-t{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;line-height:1.1}
+.fb-s{font-size:.7rem;color:rgba(255,255,255,.7);margin-top:.3rem}
+
+.sec{margin-bottom:2rem}
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:.875rem}
+.sec-tag{font-family:'Barlow Condensed',sans-serif;font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;background:var(--navy);color:#fff;padding:3px 8px;border-radius:2px}
+.sec-title{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);flex:1;border-bottom:1px solid var(--border);padding-bottom:4px}
+
+.card{background:#fff;border:1px solid var(--border);border-radius:3px;padding:1.3rem;margin-bottom:.75rem}
+.fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:.875rem}
+.f{display:flex;flex-direction:column;gap:4px}
+.f label{font-size:.62rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.f input,.f select{padding:8px 10px;border:1px solid var(--border);border-radius:3px;background:var(--off);color:var(--text);font-family:'Barlow',sans-serif;font-size:.875rem;outline:none;transition:all .15s}
+.f input:focus,.f select:focus{border-color:var(--blue-a);background:#fff;box-shadow:0 0 0 3px rgba(30,136,229,.1)}
+.f input[readonly]{background:var(--sky);color:var(--navy);font-weight:600;cursor:default}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1.1rem}
+.metric{background:var(--navy);border-radius:3px;padding:.8rem 1rem}
+.metric .val{font-family:'Barlow Condensed',sans-serif;font-size:1.6rem;font-weight:700;color:#fff;display:block;line-height:1}
+.metric .lbl{font-size:.56rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:#6A8AB0;margin-top:3px}
+.metric .sub{font-size:.6rem;color:var(--blue-a);margin-top:1px}
+
+/* PROJECTED TARGETS */
+.proj-setup{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.875rem;margin-bottom:1.1rem}
+.pib{background:var(--navy);border-radius:3px;padding:1rem 1.1rem}
+.pib-lbl{font-size:.58rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8AAED4;margin-bottom:.4rem}
+.pib-inp{width:100%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:3px;padding:7px 10px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:1.3rem;font-weight:700;outline:none;transition:all .15s}
+.pib-inp:focus{background:rgba(255,255,255,.18);border-color:var(--blue-a)}
+.pib-inp::placeholder{color:rgba(255,255,255,.3)}
+.pib-inp[readonly]{opacity:.7;cursor:default}
+.pib-note{font-size:.58rem;color:#6A8AB0;margin-top:.3rem}
+
+.derived-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px;margin-bottom:1.1rem}
+.der-box{background:var(--sky);border:1px solid var(--border);border-left:3px solid var(--blue-a);border-radius:3px;padding:.7rem .9rem}
+.der-lbl{font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+.der-val{font-family:'Barlow Condensed',sans-serif;font-size:1.2rem;font-weight:700;color:var(--navy)}
+.der-note{font-size:.58rem;color:var(--muted);margin-top:.1rem}
+
+/* PROJECTION TABLE */
+.proj-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;margin-bottom:.75rem}
+.proj-table{width:100%;border-collapse:collapse;min-width:680px;font-size:.78rem}
+.proj-table thead tr:first-child th{background:var(--dark);color:#8AAED4;font-size:.56rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 9px;text-align:center;border-right:1px solid #1A2A4A}
+.proj-table thead tr:first-child th:first-child{text-align:left;color:#fff;padding-left:10px}
+.proj-table thead tr:last-child th{background:#122650;color:#6A8AB0;font-size:.52rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;text-align:center;border-right:1px solid #1A2A4A;border-bottom:2px solid var(--blue-a)}
+.proj-table thead tr:last-child th:first-child{text-align:left;padding-left:10px}
+.proj-table tbody tr{border-bottom:1px solid var(--border)}
+.proj-table tbody tr:last-child{border-bottom:none}
+.proj-table tbody tr:nth-child(even) td{background:#F7FBFF}
+.proj-table tbody td{padding:6px 9px;text-align:center;border-right:1px solid var(--border);vertical-align:middle}
+.proj-table tbody td:first-child{text-align:left;font-weight:700;font-size:.75rem;color:var(--navy);background:var(--sky);border-right:2px solid var(--border);padding-left:10px;white-space:nowrap}
+.proj-table tbody td:last-child{border-right:none}
+.td-tgt{color:var(--muted)}.td-act{font-weight:700;color:var(--navy)}
+.td-pct{font-size:.72rem}
+.td-pct.over{color:var(--success);font-weight:700}
+.td-pct.under{color:var(--danger)}
+.td-pct.on{color:var(--gold);font-weight:600}
+.proj-table tfoot td{background:var(--dark);color:var(--gold);font-family:'Barlow Condensed',sans-serif;font-size:.9rem;font-weight:700;padding:8px 9px;text-align:center;border-right:1px solid #1A2A4A}
+.proj-table tfoot td:first-child{text-align:left;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#8AAED4;font-family:'Barlow',sans-serif;padding-left:10px}
+.pbar{width:100%;height:4px;background:#E0EAF5;border-radius:2px;margin-top:3px;overflow:hidden}
+.pbar-f{height:100%;border-radius:2px}
+.pbar-f.over{background:var(--success)}.pbar-f.under{background:var(--danger)}.pbar-f.on{background:var(--gold)}
+
+.sum3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.6rem}
+.s3b{border-radius:3px;padding:.8rem 1rem;border:1px solid var(--border)}
+.s3b.tot{background:var(--navy)}.s3b.ach{background:#E8F5EE;border-color:#A8D8BC}.s3b.gap{background:#FDE8E8;border-color:#F0B8B8}
+.s3-lbl{font-size:.56rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.2rem}
+.s3b.tot .s3-lbl{color:#8AAED4}.s3b.ach .s3-lbl{color:#2D9A5A}.s3b.gap .s3-lbl{color:var(--c-o)}
+.s3-val{font-family:'Barlow Condensed',sans-serif;font-size:1.35rem;font-weight:700}
+.s3b.tot .s3-val{color:var(--gold)}.s3b.ach .s3-val{color:var(--success)}.s3b.gap .s3-val{color:var(--danger)}
+.s3-note{font-size:.58rem;margin-top:.1rem}
+.s3b.tot .s3-note{color:#6A8AB0}.s3b.ach .s3-note{color:#3A9A5A}.s3b.gap .s3-note{color:var(--danger)}
+
+/* PLANNER */
+.week-controls{display:flex;align-items:center;gap:10px;margin-bottom:.875rem;flex-wrap:wrap}
+.wk-nav{display:flex;align-items:center;gap:6px}
+.wk-btn{width:29px;height:29px;border:1px solid var(--border);border-radius:3px;background:var(--off);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--navy)}
+.wk-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.wk-lbl{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;min-width:70px;text-align:center}
+.wk-dots{display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.wk-dot{width:21px;height:21px;border-radius:3px;border:1px solid var(--border);background:var(--off);cursor:pointer;font-size:.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .12s}
+.wk-dot:hover{border-color:var(--blue-a);color:var(--blue-a)}
+.wk-dot.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.wk-dot.has-data{border-color:var(--success);color:var(--success)}
+.wk-dot.has-data.active{background:var(--success);color:#fff;border-color:var(--success)}
+
+.plan-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px;margin-bottom:.75rem}
+.plan-tbl{width:100%;border-collapse:collapse;min-width:780px}
+.plan-tbl thead th{background:var(--navy);color:#8AAED4;font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px 9px;text-align:left;white-space:nowrap}
+.plan-tbl thead th:first-child{color:#fff;width:170px}
+.plan-tbl thead th.cn{text-align:center;width:80px}
+.plan-tbl tbody tr{border-bottom:1px solid var(--border)}
+.plan-tbl tbody tr:last-child{border-bottom:none}
+.plan-tbl tbody tr:nth-child(even){background:#F9FBFD}
+.plan-tbl tbody td{padding:5px 6px;vertical-align:middle}
+.plan-tbl td.ta{font-weight:600;font-size:.8rem;color:var(--navy);padding-left:10px;background:var(--sky);border-right:1px solid var(--border);white-space:nowrap}
+.plan-tbl td.tn input{width:100%;padding:5px 5px;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--text);font-family:'Barlow',sans-serif;font-size:.875rem;text-align:center;outline:none;transition:all .15s}
+.plan-tbl td.tn input:focus{border-color:var(--blue-a);background:#fff}
+.plan-tbl td.tt input{width:100%;padding:5px 7px;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--text);font-family:'Barlow',sans-serif;font-size:.8rem;outline:none;transition:all .15s}
+.plan-tbl td.tt input:focus{border-color:var(--blue-a);background:#fff}
+.plan-tbl td.td-d input{width:130px;padding:5px 6px;border:1px solid transparent;border-radius:3px;background:transparent;color:var(--text);font-family:'Barlow',sans-serif;font-size:.78rem;outline:none}
+.plan-tbl td.td-d input:focus{border-color:var(--blue-a);background:#fff}
+.plan-tbl tfoot td{background:var(--dark);color:#fff;font-weight:700;font-size:.72rem;padding:7px 9px;text-align:center}
+.plan-tbl tfoot td:first-child{text-align:left;letter-spacing:.06em;text-transform:uppercase;font-size:.58rem;color:#8AAED4;padding-left:10px}
+.plan-tbl tfoot td.cn{font-family:'Barlow Condensed',sans-serif;font-size:.95rem;color:var(--gold)}
+
+/* CONSOLIDATION VIEW */
+.chain-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap}
+.chain-crumb{font-size:.68rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.chain-crumb .crumb{font-weight:600;color:var(--navy)}
+.chain-crumb .sep{color:var(--border);font-weight:700}
+
+.con-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:1rem}
+.con-card{background:#fff;border:1px solid var(--border);border-radius:3px;padding:1rem 1.1rem;cursor:pointer;transition:all .15s;position:relative}
+.con-card:hover{border-color:var(--blue-a);box-shadow:0 3px 12px rgba(10,42,94,.1);transform:translateY(-1px)}
+.con-card .cc-name{font-weight:700;font-size:.9rem;color:var(--navy);margin-bottom:.3rem}
+.con-card .cc-role{font-size:.62rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem}
+.con-card .cc-nums{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.con-card .cc-num{text-align:center}
+.con-card .cc-num .n{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;color:var(--navy);display:block;line-height:1}
+.con-card .cc-num .l{font-size:.52rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:2px}
+.con-card .cc-bar{margin-top:.6rem}
+.cc-pct-lbl{font-size:.58rem;color:var(--muted);display:flex;justify-content:space-between;margin-bottom:2px}
+.cc-pbar{height:4px;background:#E0EAF5;border-radius:2px;overflow:hidden}
+.cc-pbar-f{height:100%;border-radius:2px;background:var(--blue-a)}
+.cc-add-btn{font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:3px;border:1px dashed var(--border);background:transparent;color:var(--muted);cursor:pointer;width:100%;text-align:center;transition:all .15s;margin-top:6px}
+.cc-add-btn:hover{border-color:var(--blue-a);color:var(--blue-a)}
+
+/* SAVED PLANS */
+.saved-plans-wrap{background:#fff;border:1px solid var(--border);border-radius:3px;padding:1rem 1.1rem;margin-top:1.5rem}
+.saved-plans-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:1rem}
+.saved-plans-copy{font-size:.76rem;color:var(--muted);max-width:640px;line-height:1.55}
+.saved-plans-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.saved-plans-tools input{padding:8px 10px;border:1px solid var(--border);border-radius:3px;background:#fff;color:var(--text);font-family:'Barlow',sans-serif;font-size:.82rem;min-width:200px}
+.saved-plans-tools select{padding:8px 10px;border:1px solid var(--border);border-radius:3px;background:#fff;color:var(--text);font-family:'Barlow',sans-serif;font-size:.82rem}
+.saved-plans-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.saved-plan-card{background:#F9FBFD;border:1px solid var(--border);border-radius:3px;padding:1rem}
+.saved-plan-role{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--blue-a);margin-bottom:.35rem}
+.saved-plan-name{font-weight:700;color:var(--navy);font-size:.95rem;margin-bottom:.25rem;line-height:1.3}
+.saved-plan-meta{font-size:.68rem;color:var(--muted);line-height:1.55}
+.saved-plan-actions{display:flex;justify-content:flex-end;margin-top:.85rem}
+.saved-plan-empty{border:1px dashed var(--border);border-radius:3px;padding:1rem 1.1rem;font-size:.78rem;color:var(--muted);background:#F9FBFD}
+
+/* AUTH */
+.auth-wrap{background:#fff;border:1px solid var(--border);border-radius:3px;padding:1rem 1.1rem;margin:1.5rem 0}
+.auth-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:.8rem}
+.auth-copy{font-size:.76rem;color:var(--muted);line-height:1.55;max-width:640px}
+.auth-status{font-size:.72rem;color:var(--muted)}
+.auth-status strong{color:var(--navy)}
+.auth-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.auth-tools input{padding:8px 10px;border:1px solid var(--border);border-radius:3px;background:#fff;color:var(--text);font-family:'Barlow',sans-serif;font-size:.82rem;min-width:190px}
+.hierarchy-wrap{margin-top:.75rem}
+
+/* CON TOTAL ROW */
+.con-total{background:var(--navy);border-radius:3px;padding:1rem 1.3rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:10px;align-items:center;margin-bottom:1rem}
+.ct-label{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#8AAED4}
+.ct-num{text-align:center}
+.ct-num .n{font-family:'Barlow Condensed',sans-serif;font-size:1.5rem;font-weight:700;color:var(--gold);display:block;line-height:1}
+.ct-num .l{font-size:.54rem;text-transform:uppercase;letter-spacing:.1em;color:#6A8AB0;margin-top:2px}
+
+/* SUMMARY TABLE */
+.sum-tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:3px}
+.sum-tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.sum-tbl thead th{background:var(--sky);color:var(--muted);font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:7px 9px;text-align:center;border-bottom:1px solid var(--border)}
+.sum-tbl thead th:first-child{text-align:left;padding-left:10px}
+.sum-tbl tbody td{padding:6px 9px;border-bottom:1px solid var(--border);text-align:center;vertical-align:middle}
+.sum-tbl tbody td:first-child{text-align:left;font-weight:600;color:var(--navy);background:var(--off);padding-left:10px;border-right:1px solid var(--border);font-size:.78rem}
+.sum-tbl tbody tr:last-child td{border-bottom:none}
+.sum-tbl tfoot td{background:var(--navy);color:var(--gold);font-weight:700;font-size:.75rem;padding:7px 9px;text-align:center}
+.sum-tbl tfoot td:first-child{text-align:left;padding-left:10px;font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;color:#8AAED4}
+
+/* CALENDAR */
+.cal-mth{font-family:'Barlow Condensed',sans-serif;font-size:.88rem;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:1rem}
+.cal-hd{text-align:center;font-size:.53rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:3px 0 4px}
+.cal-d{min-height:36px;padding:3px;border-radius:3px;background:#fff;border:1px solid var(--border);font-size:.68rem;font-weight:600;display:flex;flex-direction:column;align-items:center}
+.cal-d.today{border-color:var(--gold);background:#FFFAE8}
+.cal-d.hev{background:#E8F5EE;border-color:var(--success)}
+.cal-d.emp{background:transparent;border-color:transparent}
+.ddot{width:4px;height:4px;border-radius:50%;background:var(--success);margin-top:2px}
+
+/* CHECKLIST */
+.cklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:6px}
+.ci{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--border);border-radius:3px;background:var(--off);cursor:pointer;transition:all .14s;user-select:none}
+.ci:hover{border-color:var(--blue-a);background:var(--sky)}
+.ci.checked{background:#E8F5EE;border-color:var(--success)}
+.ck{width:14px;height:14px;border:2px solid var(--border);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .14s}
+.ci.checked .ck{background:var(--success);border-color:var(--success)}
+.ci.checked .ck::after{content:'';width:3px;height:6px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);display:block}
+.ci span{font-size:.78rem}
+.ci.checked span{color:var(--success);font-weight:600}
+
+/* FORM ACTIONS */
+.form-actions{display:flex;justify-content:space-between;align-items:center;margin-top:2rem;padding-top:1.25rem;border-top:2px solid var(--border);flex-wrap:wrap;gap:10px}
+.form-actions-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.plan-save-card{margin-top:.75rem}
+.plan-save-meta{font-size:.68rem;color:var(--muted);line-height:1.5}
+.plan-save-meta code{background:#EFF5FC;border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--navy)}
+.btn{padding:8px 16px;border-radius:3px;font-family:'Barlow',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;border:none}
+.bto{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.bto:hover{border-color:var(--navy);color:var(--navy)}
+.btp{background:var(--navy);color:#fff}
+.btp:hover{background:var(--blue);transform:translateY(-1px);box-shadow:0 4px 12px rgba(10,42,94,.25)}
+.btn-sm{padding:5px 10px;font-size:.65rem}
+.btn[disabled]{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(5,15,35,.6);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-overlay.active{display:flex}
+.modal{background:#fff;border-radius:4px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal-hdr{background:var(--navy);padding:1rem 1.3rem;display:flex;align-items:center;justify-content:space-between;border-radius:4px 4px 0 0}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:1rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.04em}
+.modal-close{background:none;border:none;color:#8AAED4;font-size:1.2rem;cursor:pointer;line-height:1;padding:0 4px}
+.modal-close:hover{color:#fff}
+.modal-body{padding:1.3rem}
+.modal-body .fg{margin-bottom:1rem}
+.modal-footer{padding:.875rem 1.3rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+.site-footer{background:var(--navy);padding:.875rem 1.5rem;text-align:center}
+.site-footer p{font-size:.63rem;color:#5A7099;letter-spacing:.06em}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;padding:10px 16px;border-radius:3px;font-size:.78rem;font-weight:600;border-left:3px solid var(--blue-a);opacity:0;transform:translateY(8px);transition:all .25s;z-index:999;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:640px){
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .type-grid{grid-template-columns:repeat(2,1fr)}
+  .sum3{grid-template-columns:1fr 1fr}
+  .con-total{grid-template-columns:1fr 1fr;gap:6px}
+  #sc-form .fw{padding:1.25rem 1rem 3rem}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <div>
+      <div class="logo">Gut<span>guard</span></div>
+      <div class="logo-sub">IGI Corp · CVA Bldg, JP Laurel Ave, Davao City</div>
+    </div>
+    <div class="hdr-right">
+      <button class="back-btn" id="backBtn" onclick="goHome()">&#8592; Home</button>
+      <div class="ref">Ref. OPS-032326-003<div class="pill pill-r">Deadline: Apr 1, 2026</div></div>
+    </div>
+  </div>
+</header>
+<div class="memo-strip">
+  <div class="memo-strip-inner">
+    <div class="mi">TO: <strong>All Members, 01s, Leaders, Depots & City Stockists</strong></div>
+    <div class="mi">FROM: <strong>Office of Chairman & CEO</strong></div>
+    <div class="mi">DATE: <strong>March 23, 2026</strong></div>
+    <div class="mi">EXECUTION: <strong>April 5 – July 5, 2026</strong></div>
+  </div>
+</div>
+
+<!-- ══ HOME SCREEN ══ -->
+<div id="sc-home" class="screen active">
+  <div class="ch-head">
+    <h1>90-Day Planning &amp; Consolidation System</h1>
+    <p>Each level enters their own plan. Data flows up automatically: Member → Team Leader → Squad → Platoon → 01</p>
+  </div>
+
+  <div class="memo-box">
+    <div class="mb-lbl">How It Works</div>
+    <strong>1.</strong> Each person enters their own plan at their level. &nbsp;<strong>2.</strong> Leaders at each level see a <strong>Consolidation View</strong> — adding members/leaders under them and instantly seeing totals roll up. &nbsp;<strong>3.</strong> The 01/Product Center sees the full consolidated plan across all levels.
+  </div>
+
+  <div class="auth-wrap">
+    <div class="auth-head">
+      <div>
+        <div class="sec-lbl" style="margin-bottom:.45rem">Account Access</div>
+        <div class="auth-copy">Sign in with your Supabase account before saving or browsing plans. RLS will scope plan access to the signed-in user.</div>
+      </div>
+      <div class="auth-status" id="auth-status">Checking Supabase auth state...</div>
+    </div>
+    <div class="auth-tools">
+      <input type="email" id="auth-email" placeholder="Email address">
+      <input type="password" id="auth-password" placeholder="Password">
+      <button class="btn btp" onclick="handleSignIn()">Sign In</button>
+      <button class="btn bto" onclick="handleSignUp()">Sign Up</button>
+      <button class="btn bto" onclick="handleSignOut()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="sec-lbl">Consolidation Chain</div>
+  <div class="flow-chain">
+    <div class="fc-node"><span class="fc-badge fc-m" onclick="startForm('member')">🙋 Member</span></div>
+    <span class="fc-arrow">→</span>
+    <div class="fc-node"><span class="fc-badge fc-l" onclick="startForm('leader')">👥 Team Leader</span></div>
+    <span class="fc-arrow">→</span>
+    <div class="fc-node"><span class="fc-badge fc-s" onclick="startForm('squad')">🏅 Squad Leader</span></div>
+    <span class="fc-arrow">→</span>
+    <div class="fc-node"><span class="fc-badge fc-p" onclick="startForm('platoon')">⭐ Platoon Leader</span></div>
+    <span class="fc-arrow">→</span>
+    <div class="fc-node"><span class="fc-badge fc-o" onclick="startForm('o1')">🏢 01 / Product Center</span></div>
+  </div>
+
+  <div class="step-bar">
+    <div class="step-item"><span class="s-num">Step 1</span><div class="s-name">Set Targets</div></div>
+    <div class="step-item"><span class="s-num">Step 2</span><div class="s-name">Compute Numbers</div></div>
+    <div class="step-item"><span class="s-num">Step 3</span><div class="s-name">Plan Activities</div></div>
+    <div class="step-item"><span class="s-num">Step 4</span><div class="s-name">Set Big Events</div></div>
+    <div class="step-item"><span class="s-num">Step 5</span><div class="s-name">Consolidate & Submit</div></div>
+  </div>
+
+  <div class="sec-lbl">Open a Plan</div>
+  <div class="type-grid">
+    <div class="tc tc-m" onclick="startForm('member')"><span class="t-icon">🙋</span><div class="t-name">Member</div><div class="t-desc">Individual 90-day plan with targets, weekly activities & big event commitment</div><span class="t-badge bm">Member</span></div>
+    <div class="tc tc-l" onclick="startForm('leader')"><span class="t-icon">👥</span><div class="t-name">Team Leader</div><div class="t-desc">Team plan + add members below to consolidate their data upward</div><span class="t-badge bl">Team Leader</span></div>
+    <div class="tc tc-s" onclick="startForm('squad')"><span class="t-icon">🏅</span><div class="t-name">Squad Leader</div><div class="t-desc">Squad plan + add team leaders below to roll up totals</div><span class="t-badge bs">Squad Leader</span></div>
+    <div class="tc tc-p" onclick="startForm('platoon')"><span class="t-icon">⭐</span><div class="t-name">Platoon Leader</div><div class="t-desc">Platoon plan + consolidate squad leaders below</div><span class="t-badge bp">Platoon Leader</span></div>
+    <div class="tc tc-o" onclick="startForm('o1')"><span class="t-icon">🏢</span><div class="t-name">01 / Product Center</div><div class="t-desc">Final consolidated plan — all levels roll up here. Deadline: April 1, 2026</div><span class="t-badge bo">01 Level</span></div>
+  </div>
+  <div class="saved-plans-wrap">
+    <div class="saved-plans-head">
+      <div>
+        <div class="sec-lbl" style="margin-bottom:.45rem">Saved Plans</div>
+        <div class="saved-plans-copy">Browse plans already stored in Supabase and open any role-specific record directly from the home screen.</div>
+      </div>
+      <div class="saved-plans-tools">
+        <input type="text" id="saved-plans-search" placeholder="Search by name" oninput="refreshSavedPlans()">
+        <select id="saved-plans-filter" onchange="refreshSavedPlans()">
+          <option value="">All Roles</option>
+          <option value="member">Member</option>
+          <option value="leader">Team Leader</option>
+          <option value="squad">Squad Leader</option>
+          <option value="platoon">Platoon Leader</option>
+          <option value="o1">01 / Product Center</option>
+        </select>
+        <button class="btn bto" onclick="refreshSavedPlans()">Refresh List</button>
+      </div>
+    </div>
+    <div id="saved-plans-list" class="saved-plans-list">
+      <div class="saved-plan-empty">Saved plans will appear here after Supabase is connected.</div>
+    </div>
+  </div>
+  <div class="notice n-danger"><strong>Non-Negotiable:</strong> All leaders submit individual plans · All plans include leads, pay-ins, sales · Each Product Center schedules at least 2 big events · Final plan submitted by the 01.</div>
+</div>
+
+<!-- ══ FORM SCREEN ══ -->
+<div id="sc-form" class="screen">
+  <div class="fw" id="forminner"></div>
+</div>
+
+<!-- ══ MODAL: ADD SUB-MEMBER ══ -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-title">Add Member</div>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <div class="f"><label>Name</label><input type="text" id="m-inp-name" placeholder="Full name"></div>
+        <div class="f"><label>90-Day Pay-in Target</label><input type="number" id="m-inp-pi" min="0" placeholder="0"></div>
+        <div class="f"><label>90-Day Sales Target (₱)</label><input type="number" id="m-inp-sales" min="0" placeholder="0"></div>
+        <div class="f"><label>90-Day Leads Target</label><input type="number" id="m-inp-leads" min="0" placeholder="0"></div>
+        <div class="f"><label>90-Day Attendees Target</label><input type="number" id="m-inp-att" min="0" placeholder="0"></div>
+        <div class="f"><label>Big Event Attendees Committed</label><input type="number" id="m-inp-evt" min="0" placeholder="0"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn bto" onclick="closeModal()">Cancel</button>
+      <button class="btn btp" onclick="saveSubMember()">Add to Consolidation</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>Gutguard — IGI Corp · Room 13, CVA Building, JP Laurel Ave, Bgy 11-B, Davao City · 0936 972 4896 · www.gutguard.ph</p>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="plan-model.js"></script>
+<script src="plan-api.js"></script>
+<script>
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+var curType = null, curWeek = 1;
+var currentUser = null;
+var childPlans = {member:[],leader:[],squad:[],platoon:[],o1:[]};
+var PARENT_ROLE = {member:'leader',leader:'squad',squad:'platoon',platoon:'o1',o1:null};
+function makePlanMeta(){return {planId:null,status:'submitted',lastSavedAt:null};}
+var planMeta = {
+  member:makePlanMeta(),
+  leader:makePlanMeta(),
+  squad:makePlanMeta(),
+  platoon:makePlanMeta(),
+  o1:makePlanMeta()
+};
+
+// wkData[type][week][activity] = {leads,att,pi,sales,date,...}
+var wkData = {member:{},leader:{},squad:{},platoon:{},o1:{}};
+var calEvts = {member:{},leader:{},squad:{},platoon:{},o1:{}};
+
+// Consolidation: subMembers[type] = [{name, pi, sales, leads, att, evt, role}]
+var subMembers = {member:[],leader:[],squad:[],platoon:[],o1:[]};
+
+// Target inputs [type] = {pi, sales}
+var targets = {member:{pi:0,sales:0},leader:{pi:0,sales:0},squad:{pi:0,sales:0},platoon:{pi:0,sales:0},o1:{pi:0,sales:0}};
+
+var ACTIVITIES = {
+  member:  ['Invite / Prospect','Product Presentation','Business Presentation','Training','Testimonial Session','Leader Fellowship','Big Event'],
+  leader:  ['Product Presentation','Business Presentation','Training','Testimonial Session','Leader Fellowship','Big Event','Team Meeting'],
+  squad:   ['Product Presentation','Business Presentation','Training','Testimonial Session','Leader Fellowship','Big Event','Squad Meeting'],
+  platoon: ['Product Presentation','Business Presentation','Training','Big Event','Platoon Meeting','Leader Fellowship'],
+  o1:      ['Product Presentation','Business Presentation','Training','Testimonial Session','Leader Fellowship','Big Event','Planning Workshop']
+};
+
+var EXTRA_COLS = {
+  member:  [{key:'notes',label:'Notes',type:'txt'}],
+  leader:  [{key:'assigned',label:'Assigned Members',type:'txt'},{key:'venue',label:'Venue',type:'txt'}],
+  squad:   [{key:'leader',label:'Resp. Leader',type:'txt'},{key:'venue',label:'Venue',type:'txt'}],
+  platoon: [{key:'leader',label:'Resp. Leader',type:'txt'},{key:'venue',label:'Venue',type:'txt'}],
+  o1:      [{key:'leader',label:'Assigned Leader',type:'txt'},{key:'venue',label:'Venue',type:'txt'}]
+};
+
+var SUB_ROLES = {
+  leader:'Member', squad:'Team Leader', platoon:'Squad Leader', o1:'Platoon Leader', member:null
+};
+
+function todayStr(){var n=new Date(),p=v=>String(v).padStart(2,'0');return n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate());}
+function formatSavedAt(value){
+  if(!value)return '';
+  var d=new Date(value);
+  if(isNaN(d.getTime()))return '';
+  return d.toLocaleString();
+}
+function updateSaveStatus(type, state){
+  var statusEl=document.getElementById(type+'-save-state');
+  var metaEl=document.getElementById(type+'-save-meta');
+  if(!statusEl||!metaEl)return;
+  var apiReady=!!(window.GutguardPlanApi&&window.GutguardPlanApi.isConfigured&&window.GutguardPlanApi.isConfigured());
+  var storedRef=window.GutguardPlanModel&&window.GutguardPlanModel.getStoredPlanRef?window.GutguardPlanModel.getStoredPlanRef(type):null;
+  var meta=planMeta[type]||makePlanMeta();
+  var tone='n-info';
+  var message='';
+  var detail='';
+
+  if(state&&state.message){
+    tone=state.tone||tone;
+    message=state.message;
+    detail=state.detail||'';
+  }else if(!apiReady){
+    tone='n-danger';
+    message='Supabase is not configured yet. Set your project URL and anon key in supabase-config.js before saving.';
+  }else if(!currentUser){
+    tone='n-danger';
+    message='Sign in first. Save, load, and saved-plan browsing are protected by Supabase auth and RLS.';
+  }else if(meta.planId){
+    tone='n-success';
+    message='Connected to Supabase. This form is linked to a saved plan.';
+    detail='Plan ID: <code>'+meta.planId+'</code>'+(meta.lastSavedAt?' | Last saved: '+formatSavedAt(meta.lastSavedAt):'');
+  }else if(storedRef&&storedRef.planId){
+    tone='n-info';
+    message='A saved plan is available for this role on this device.';
+    detail='Remembered plan ID: <code>'+storedRef.planId+'</code>'+(storedRef.updatedAt?' | Last saved: '+formatSavedAt(storedRef.updatedAt):'');
+  }else{
+    tone='n-info';
+    message='This is a new local form. Save it to Supabase to create a persistent plan.';
+  }
+
+  statusEl.className='notice '+tone;
+  statusEl.textContent=message;
+  metaEl.innerHTML=detail;
+}
+function resetInMemoryPlan(type){
+  wkData[type]={};
+  calEvts[type]={};
+  subMembers[type]=[];
+  targets[type]={pi:0,sales:0};
+}
+function clearVisibleForm(type){
+  var root=document.getElementById('forminner');
+  if(!root)return;
+  root.querySelectorAll('[data-plan-field]').forEach(function(el){el.value='';});
+  root.querySelectorAll('[data-check-key]').forEach(function(el){el.classList.remove('checked');});
+  var piEl=document.getElementById(type+'-tgt-pi'); if(piEl)piEl.value='';
+  var salesEl=document.getElementById(type+'-tgt-sales'); if(salesEl)salesEl.value='';
+  var calStartEl=document.getElementById(type+'-cs'); if(calStartEl)calStartEl.value=todayStr();
+  root.querySelectorAll('.auto-today').forEach(function(el){el.value=todayStr();});
+}
+function getCurrentUserEmail(){return currentUser&&currentUser.email?currentUser.email:'';}
+function renderAuthState(){
+  var statusEl=document.getElementById('auth-status');
+  if(!statusEl)return;
+  if(!(window.GutguardSupabase&&window.GutguardSupabase.isConfigured&&window.GutguardSupabase.isConfigured())){
+    statusEl.innerHTML='Supabase is not configured.';
+    return;
+  }
+  if(currentUser){
+    statusEl.innerHTML='Signed in as <strong>'+currentUser.email+'</strong>';
+  }else{
+    statusEl.innerHTML='Not signed in';
+  }
+}
+async function bootstrapAuthState(){
+  if(!(window.GutguardSupabase&&window.GutguardSupabase.isConfigured&&window.GutguardSupabase.isConfigured())){
+    renderAuthState();
+    return;
+  }
+  try{
+    currentUser=await window.GutguardSupabase.getUser();
+  }catch(err){
+    currentUser=null;
+  }
+  renderAuthState();
+  refreshSavedPlans();
+}
+async function handleSignIn(){
+  try{
+    var email=document.getElementById('auth-email').value.trim();
+    var password=document.getElementById('auth-password').value;
+    await window.GutguardSupabase.signInWithPassword(email,password);
+    currentUser=await window.GutguardSupabase.getUser();
+    renderAuthState();
+    refreshSavedPlans();
+    showToast('Signed in as '+getCurrentUserEmail()+'.');
+  }catch(err){
+    showToast(err&&err.message?err.message:'Sign in failed.');
+  }
+}
+async function handleSignUp(){
+  try{
+    var email=document.getElementById('auth-email').value.trim();
+    var password=document.getElementById('auth-password').value;
+    await window.GutguardSupabase.signUpWithPassword(email,password);
+    currentUser=await window.GutguardSupabase.getUser();
+    renderAuthState();
+    refreshSavedPlans();
+    showToast(currentUser?'Account created and signed in.':'Account created. Check your email confirmation settings.');
+  }catch(err){
+    showToast(err&&err.message?err.message:'Sign up failed.');
+  }
+}
+async function handleSignOut(){
+  try{
+    await window.GutguardSupabase.signOut();
+    currentUser=null;
+    renderAuthState();
+    refreshSavedPlans();
+    showToast('Signed out.');
+  }catch(err){
+    showToast(err&&err.message?err.message:'Sign out failed.');
+  }
+}
+async function populateParentOptions(type, selectedPlanId){
+  var selectEl=document.getElementById(type+'-parent-plan-id');
+  if(!selectEl)return;
+  var currentValue=selectedPlanId||selectEl.value||'';
+  selectEl.innerHTML='<option value="">No parent selected</option>';
+  if(!PARENT_ROLE[type]){
+    selectEl.disabled=true;
+    return;
+  }
+  selectEl.disabled=false;
+  if(!currentUser){
+    selectEl.innerHTML='<option value="">Sign in to load parent plans</option>';
+    return;
+  }
+  try{
+    var parents=await window.GutguardPlanApi.listPotentialParents(type);
+    if(!parents.length){
+      selectEl.innerHTML='<option value="">No '+(TYPE_LABEL[PARENT_ROLE[type]]||PARENT_ROLE[type])+' plans found</option>';
+      return;
+    }
+    selectEl.innerHTML='<option value="">No parent selected</option>'+parents.map(function(plan){
+      var selected=currentValue&&currentValue===plan.id?' selected':'';
+      return '<option value="'+plan.id+'"'+selected+'>'+(plan.full_name||'(No Name)')+' · '+(TYPE_LABEL[plan.role_type]||plan.role_type)+'</option>';
+    }).join('');
+  }catch(err){
+    selectEl.innerHTML='<option value="">Unable to load parent plans</option>';
+  }
+}
+async function refreshChildPlans(type){
+  childPlans[type]=[];
+  if(!planMeta[type]||!planMeta[type].planId||!PARENT_ROLE[type]||!currentUser){
+    renderConsolidation(type);
+    return;
+  }
+  try{
+    childPlans[type]=await window.GutguardPlanApi.listChildPlans(planMeta[type].planId);
+  }catch(err){
+    childPlans[type]=[];
+  }
+  renderConsolidation(type);
+}
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+async function startForm(type, explicitPlanId){
+  curType=type; curWeek=1;
+  document.getElementById('backBtn').style.display='inline-flex';
+  showScreen('sc-form');
+  document.getElementById('forminner').innerHTML = buildForm(type);
+  document.querySelectorAll('.auto-today').forEach(el=>{if(!el.value)el.value=todayStr();});
+  await populateParentOptions(type);
+  renderPlanner(type);
+  renderSummaryTbl(type);
+  renderCal(type);
+  updateDots(type);
+  renderConsolidation(type);
+  computeProjections(type);
+  updateSaveStatus(type,{message:'Form ready. Checking for a saved plan...',tone:'n-info'});
+  if(window.GutguardPlanApi&&window.GutguardPlanApi.isConfigured&&window.GutguardPlanApi.isConfigured()){
+    if(explicitPlanId){
+      try{
+        await loadSavedPlan(true, explicitPlanId);
+      }catch(err){
+        updateSaveStatus(type,{message:'The selected Supabase plan could not be loaded.',tone:'n-danger',detail:err&&err.message?err.message:''});
+      }
+    }else{
+      var storedRef=window.GutguardPlanModel&&window.GutguardPlanModel.getStoredPlanRef?window.GutguardPlanModel.getStoredPlanRef(type):null;
+      if(storedRef&&storedRef.planId){
+        try{
+          await loadSavedPlan(true);
+        }catch(err){
+          updateSaveStatus(type,{message:'A remembered Supabase plan could not be loaded.',tone:'n-danger',detail:err&&err.message?err.message:''});
+        }
+      }else{
+        updateSaveStatus(type);
+      }
+    }
+  }else{
+    updateSaveStatus(type);
+  }
+  await refreshChildPlans(type);
+  window.scrollTo(0,0);
+}
+
+function goHome(){
+  document.getElementById('backBtn').style.display='none';
+  showScreen('sc-home');
+  refreshSavedPlans();
+  curType=null; window.scrollTo(0,0);
+}
+
+async function renderSavedPlans(roleType){
+  var listEl=document.getElementById('saved-plans-list');
+  if(!listEl)return;
+  if(!(window.GutguardPlanApi&&window.GutguardPlanApi.isConfigured&&window.GutguardPlanApi.isConfigured())){
+    listEl.innerHTML='<div class="saved-plan-empty">Configure Supabase in <code>supabase-config.js</code> to browse saved plans.</div>';
+    return;
+  }
+  if(!currentUser){
+    listEl.innerHTML='<div class="saved-plan-empty">Sign in to browse saved plans.</div>';
+    return;
+  }
+  var searchEl=document.getElementById('saved-plans-search');
+  var searchTerm=searchEl&&searchEl.value?searchEl.value.trim().toLowerCase():'';
+  listEl.innerHTML='<div class="saved-plan-empty">Loading saved plans from Supabase...</div>';
+  try{
+    var plans=await window.GutguardPlanApi.listPlans(roleType||null);
+    if(searchTerm){
+      plans=plans.filter(function(plan){
+        return (plan.full_name||'').toLowerCase().indexOf(searchTerm)!==-1;
+      });
+    }
+    if(!plans.length){
+      listEl.innerHTML='<div class="saved-plan-empty">No saved plans found for the current filter.</div>';
+      return;
+    }
+    listEl.innerHTML=plans.map(function(plan){
+      var roleLabel=TYPE_LABEL[plan.role_type]||plan.role_type;
+      var updated=plan.updated_at?formatSavedAt(plan.updated_at):(plan.created_at?formatSavedAt(plan.created_at):'');
+      return '<div class="saved-plan-card">'+
+        '<div class="saved-plan-role">'+roleLabel+'</div>'+
+        '<div class="saved-plan-name">'+(plan.full_name||'(No Name)')+'</div>'+
+        '<div class="saved-plan-meta">Status: '+(plan.status||'submitted')+(updated?' | Updated: '+updated:'')+'</div>'+
+        '<div class="saved-plan-meta" style="margin-top:.25rem">Plan ID: <code>'+plan.id+'</code></div>'+
+        '<div class="saved-plan-actions"><button class="btn btp" onclick="openSavedPlan(\''+plan.id+'\', \''+plan.role_type+'\')">Open</button></div>'+
+      '</div>';
+    }).join('');
+  }catch(err){
+    listEl.innerHTML='<div class="saved-plan-empty">Failed to load saved plans. '+(err&&err.message?err.message:'Unknown error.')+'</div>';
+  }
+}
+
+async function refreshSavedPlans(){
+  var filterEl=document.getElementById('saved-plans-filter');
+  var roleType=filterEl?filterEl.value:'';
+  await renderSavedPlans(roleType||null);
+}
+
+async function openSavedPlan(planId, roleType){
+  await startForm(roleType, planId);
+}
+
+/* ══════════════════════════════════════════
+   FORM BUILDER
+══════════════════════════════════════════ */
+var TYPE_LABEL={member:'Member',leader:'Team Leader',squad:'Squad Leader',platoon:'Platoon Leader',o1:'01 / Product Center'};
+var TYPE_BADGE={member:'bm',leader:'bl',squad:'bs',platoon:'bp',o1:'bo'};
+var TYPE_CLASS={member:'m',leader:'leader',squad:'squad',platoon:'platoon',o1:'o1'};
+
+var INFO_FIELDS={
+  member:`<div class="f"><label>Full Name</label><input type="text" id="info-name" data-plan-field="full_name" placeholder="Your full name"></div>
+          <div class="f"><label>Team Leader</label><input type="text" id="info-team-leader" data-plan-field="team_leader_name" placeholder="Leader name"></div>
+          <div class="f"><label>Contact No.</label><input type="text" id="info-contact-no" data-plan-field="contact_no" placeholder="+63 900 000 0000"></div>
+          <div class="f"><label>Start Date</label><input type="date" id="info-start-date" data-plan-field="start_date" class="auto-today"></div>`,
+  leader:`<div class="f"><label>Leader Name</label><input type="text" id="info-name" data-plan-field="full_name" placeholder="Your name"></div>
+          <div class="f"><label>Team Name</label><input type="text" id="info-team-name" data-plan-field="team_name" placeholder="Team name"></div>
+          <div class="f"><label>No. of Members</label><input type="number" id="info-member-count" data-plan-field="member_count" min="0" placeholder="0"></div>
+          <div class="f"><label>Start Date</label><input type="date" id="info-start-date" data-plan-field="start_date" class="auto-today"></div>`,
+  squad:`<div class="f"><label>Squad Leader Name</label><input type="text" id="info-name" data-plan-field="full_name" placeholder="Your name"></div>
+         <div class="f"><label>Squad Name</label><input type="text" id="info-squad-name" data-plan-field="squad_name" placeholder="Squad name"></div>
+         <div class="f"><label>No. of Team Leaders</label><input type="number" id="info-team-leader-count" data-plan-field="team_leader_count" min="0" placeholder="0"></div>
+         <div class="f"><label>Total Members</label><input type="number" id="info-member-count" data-plan-field="member_count" min="0" placeholder="0"></div>
+         <div class="f"><label>Start Date</label><input type="date" id="info-start-date" data-plan-field="start_date" class="auto-today"></div>`,
+  platoon:`<div class="f"><label>Platoon Leader Name</label><input type="text" id="info-name" data-plan-field="full_name" placeholder="Your name"></div>
+           <div class="f"><label>Platoon Name</label><input type="text" id="info-platoon-name" data-plan-field="platoon_name" placeholder="Platoon name"></div>
+           <div class="f"><label>No. of Squads</label><input type="number" id="info-squad-count" data-plan-field="squad_count" min="0" placeholder="0"></div>
+           <div class="f"><label>Total Members Under</label><input type="number" id="info-member-count" data-plan-field="member_count" min="0" placeholder="0"></div>
+           <div class="f"><label>Start Date</label><input type="date" id="info-start-date" data-plan-field="start_date" class="auto-today"></div>`,
+  o1:`<div class="f"><label>01 Name</label><input type="text" id="info-name" data-plan-field="full_name" placeholder="Your name"></div>
+      <div class="f"><label>Depot / City Stockist</label><input type="text" id="info-depot-name" data-plan-field="depot_name" placeholder="Depot name"></div>
+      <div class="f"><label>Area / Location</label><input type="text" id="info-area-location" data-plan-field="area_location" placeholder="City or area"></div>
+      <div class="f"><label>No. of Platoon Leaders</label><input type="number" id="info-platoon-leader-count" data-plan-field="platoon_leader_count" min="0" placeholder="0"></div>
+      <div class="f"><label>Start Date</label><input type="date" id="info-start-date" data-plan-field="start_date" class="auto-today"></div>`
+};
+
+function buildForm(type){
+  var p=type;
+  var extraCols=EXTRA_COLS[type]||[];
+  var subRole=SUB_ROLES[type];
+  var hasConsolidation=subRole!==null;
+  var parentRole=PARENT_ROLE[type];
+
+  var memberChecklist = type==='member'?`
+    <div class="card" style="margin-bottom:.875rem">
+      <div class="sec-lbl" style="margin-bottom:.7rem">Weekly Activity Commitments</div>
+      <div class="cklist">
+        <div class="ci" data-check-key="invite_daily" onclick="tog(this)"><div class="ck"></div><span>Invite / Prospect daily</span></div>
+        <div class="ci" data-check-key="product_presentation" onclick="tog(this)"><div class="ck"></div><span>Attend Product Presentation</span></div>
+        <div class="ci" data-check-key="business_presentation" onclick="tog(this)"><div class="ck"></div><span>Attend Business Presentation</span></div>
+        <div class="ci" data-check-key="training_session" onclick="tog(this)"><div class="ck"></div><span>Join Training Session</span></div>
+        <div class="ci" data-check-key="testimonial_session" onclick="tog(this)"><div class="ck"></div><span>Join Testimonial Session</span></div>
+        <div class="ci" data-check-key="leader_fellowship" onclick="tog(this)"><div class="ck"></div><span>Join Leader Fellowship</span></div>
+      </div>
+    </div>`:'';
+
+  var consolidationSection = hasConsolidation?`
+    <div class="sec">
+      <div class="sec-head"><span class="sec-tag">Section E</span><span class="sec-title">Consolidation — ${subRole}s Under This ${TYPE_LABEL[type]}</span></div>
+      <div class="notice n-info">Add each ${subRole} under you. Their 90-day targets will roll up into your consolidated totals below.</div>
+      <div id="${p}-con-container"></div>
+      <div class="con-total" id="${p}-con-total" style="display:none">
+        <div class="ct-label">Consolidated Total<br><span style="font-weight:400;color:#6A8AB0;font-size:.6rem">All ${subRole}s below</span></div>
+        <div class="ct-num"><span class="n" id="${p}-con-leads">0</span><span class="l">Leads</span></div>
+        <div class="ct-num"><span class="n" id="${p}-con-att">0</span><span class="l">Attendees</span></div>
+        <div class="ct-num"><span class="n" id="${p}-con-pi">0</span><span class="l">Pay-ins</span></div>
+        <div class="ct-num"><span class="n" id="${p}-con-sales">0</span><span class="l">Sales ₱</span></div>
+      </div>
+    </div>`:'';
+
+  return `
+    <div class="form-banner ${TYPE_CLASS[type]}">
+      <div>
+        <div class="fb-t">${TYPE_LABEL[type]} — 90-Day Execution Plan</div>
+        <div class="fb-s">${type==='o1'?'Final Consolidated 90-Day Execution Plan — SUBMIT BY APRIL 1, 2026':'Individual 90-Day Execution Plan'}</div>
+      </div>
+      <span class="t-badge ${TYPE_BADGE[type]}" style="align-self:center;font-size:.65rem;padding:5px 12px">${TYPE_LABEL[type]}</span>
+    </div>
+
+    <!-- A: INFO -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-tag">Section A</span><span class="sec-title">Personal / Center Information</span></div>
+      <div class="card"><div class="fg">${INFO_FIELDS[type]}</div></div>
+      ${parentRole?`<div class="card hierarchy-wrap">
+        <div class="sec-lbl" style="margin-bottom:.7rem">Hierarchy Link</div>
+        <div class="fg">
+          <div class="f">
+            <label>Parent ${TYPE_LABEL[parentRole]}</label>
+            <select id="${p}-parent-plan-id">
+              <option value="">Loading ${TYPE_LABEL[parentRole]} plans...</option>
+            </select>
+          </div>
+        </div>
+      </div>`:''}
+      <div class="card plan-save-card">
+        <div class="sec-lbl" style="margin-bottom:.7rem">Supabase Save State</div>
+        <div class="notice n-info" id="${p}-save-state">Checking Supabase configuration...</div>
+        <div class="plan-save-meta" id="${p}-save-meta"></div>
+      </div>
+    </div>
+
+    <!-- B: PROJECTED TARGETS -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-tag">Section B</span><span class="sec-title">Step 1 — Set 90-Day Projected Targets</span></div>
+      <div class="card">
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.875rem">Enter Your Own 90-Day Targets (not consolidated)</div>
+        <div class="proj-setup">
+          <div class="pib">
+            <div class="pib-lbl">90-Day Pay-in Target</div>
+            <input class="pib-inp" type="number" id="${p}-tgt-pi" min="0" placeholder="0" oninput="onTargetChange('${p}')">
+            <div class="pib-note">Your personal pay-in goal</div>
+          </div>
+          <div class="pib">
+            <div class="pib-lbl">90-Day Sales Target (₱)</div>
+            <input class="pib-inp" type="number" id="${p}-tgt-sales" min="0" placeholder="0" oninput="onTargetChange('${p}')">
+            <div class="pib-note">Your personal sales goal</div>
+          </div>
+          <div class="pib" style="background:#061E45">
+            <div class="pib-lbl">Calendar Start Date</div>
+            <input type="date" id="${p}-cs" class="auto-today pib-inp" style="font-size:.9rem" oninput="renderCal('${p}');computeProjections('${p}')">
+            <div class="pib-note">April 5 – July 5, 2026</div>
+          </div>
+        </div>
+        <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.6rem">Computed Required Numbers (1 Pay-in = 5 Attendees · 1 Attendee = 4 Leads)</div>
+        <div class="derived-row">
+          <div class="der-box"><div class="der-lbl">Req. Attendees</div><div class="der-val" id="${p}-der-att">—</div><div class="der-note">Pay-ins × 5</div></div>
+          <div class="der-box"><div class="der-lbl">Req. Leads</div><div class="der-val" id="${p}-der-leads">—</div><div class="der-note">Attendees × 4</div></div>
+          <div class="der-box"><div class="der-lbl">Pay-ins / Week</div><div class="der-val" id="${p}-der-wkpi">—</div><div class="der-note">÷ 12 weeks</div></div>
+          <div class="der-box"><div class="der-lbl">Sales / Week ₱</div><div class="der-val" id="${p}-der-wksales">—</div><div class="der-note">÷ 12 weeks</div></div>
+          <div class="der-box"><div class="der-lbl">Leads / Week</div><div class="der-val" id="${p}-der-wkleads">—</div><div class="der-note">÷ 12 weeks</div></div>
+          <div class="der-box" style="border-left-color:var(--gold)"><div class="der-lbl">Leads / Day</div><div class="der-val" id="${p}-der-dayleads" style="color:var(--gold)">—</div><div class="der-note">÷ 90 days</div></div>
+        </div>
+      </div>
+
+      <!-- Actual Metrics -->
+      <div class="metrics">
+        <div class="metric"><span class="val" id="${p}-ml">0</span><span class="lbl">Actual Leads</span><span class="sub">from planner</span></div>
+        <div class="metric"><span class="val" id="${p}-ma">0</span><span class="lbl">Actual Attendees</span><span class="sub">from planner</span></div>
+        <div class="metric"><span class="val" id="${p}-mp">0</span><span class="lbl">Actual Pay-ins</span><span class="sub">from planner</span></div>
+        <div class="metric"><span class="val" id="${p}-ms">0</span><span class="lbl">Actual Sales ₱</span><span class="sub">from planner</span></div>
+      </div>
+
+      <!-- Projection Table -->
+      <div class="proj-table-wrap">
+        <table class="proj-table">
+          <thead>
+            <tr>
+              <th rowspan="2" style="text-align:left;vertical-align:middle">Week</th>
+              <th colspan="3" style="border-right:2px solid #1A2A4A">Pay-ins</th>
+              <th colspan="3">Sales (₱)</th>
+            </tr>
+            <tr>
+              <th>Target (cum.)</th><th>Actual (cum.)</th><th style="border-right:2px solid #1A2A4A">vs Target</th>
+              <th>Target (cum.)</th><th>Actual (cum.)</th><th>vs Target</th>
+            </tr>
+          </thead>
+          <tbody id="${p}-proj-body"></tbody>
+          <tfoot>
+            <tr>
+              <td>90-Day Total</td>
+              <td id="${p}-pf-tpi">—</td><td id="${p}-pf-api">0</td><td id="${p}-pf-vpi">—</td>
+              <td id="${p}-pf-ts">—</td><td id="${p}-pf-as">0</td><td id="${p}-pf-vs">—</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="sum3">
+        <div class="s3b tot"><div class="s3-lbl">90-Day Pay-in Target</div><div class="s3-val" id="${p}-sum-tpi">—</div><div class="s3-note" id="${p}-sum-tpi-n">Set a target</div></div>
+        <div class="s3b ach"><div class="s3-lbl">Pay-ins Achieved</div><div class="s3-val" id="${p}-sum-api">0</div><div class="s3-note" id="${p}-sum-api-n">from planner</div></div>
+        <div class="s3b gap"><div class="s3-lbl">Pay-in Gap</div><div class="s3-val" id="${p}-sum-gpi">—</div><div class="s3-note" id="${p}-sum-gpi-n">remaining</div></div>
+      </div>
+      <div class="sum3" style="margin-top:.5rem">
+        <div class="s3b tot"><div class="s3-lbl">90-Day Sales Target ₱</div><div class="s3-val" id="${p}-sum-ts">—</div><div class="s3-note" id="${p}-sum-ts-n">Set a target</div></div>
+        <div class="s3b ach"><div class="s3-lbl">Sales Achieved ₱</div><div class="s3-val" id="${p}-sum-as">₱0</div><div class="s3-note" id="${p}-sum-as-n">from planner</div></div>
+        <div class="s3b gap"><div class="s3-lbl">Sales Gap ₱</div><div class="s3-val" id="${p}-sum-gs">—</div><div class="s3-note" id="${p}-sum-gs-n">remaining</div></div>
+      </div>
+    </div>
+
+    <!-- C: WEEKLY PLANNER -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-tag">Section C</span><span class="sec-title">Step 3 — Weekly Activity Planner</span></div>
+      ${type==='member'?`<div class="notice n-info" style="margin-bottom:.75rem">Guide: 1 Pay-in = 5 Attendees · 1 Attendee = 4 Leads. Enter activities below — projections update automatically.</div>`:''}
+      ${memberChecklist}
+      <div class="card">
+        <div class="week-controls">
+          <div class="wk-nav">
+            <button class="wk-btn" onclick="gotoWeek(curWeek-1)">&#8592;</button>
+            <div class="wk-lbl" id="${p}-wl">Week 1</div>
+            <button class="wk-btn" onclick="gotoWeek(curWeek+1)">&#8594;</button>
+          </div>
+          <div class="wk-dots" id="${p}-dots"></div>
+        </div>
+        <div class="plan-wrap">
+          <table class="plan-tbl" id="${p}-ptbl">
+            <thead>
+              <tr>
+                <th>Activity</th>
+                <th>Date</th>
+                <th class="cn">Leads</th>
+                <th class="cn">Attendees</th>
+                <th class="cn">Pay-ins</th>
+                <th class="cn">Sales ₱</th>
+                ${extraCols.map(ec=>`<th>${ec.label}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody id="${p}-pbdy"></tbody>
+            <tfoot>
+              <tr>
+                <td>Week ${curWeek} Total</td><td></td>
+                <td class="cn" id="${p}-wl-l">0</td>
+                <td class="cn" id="${p}-wl-a">0</td>
+                <td class="cn" id="${p}-wl-p">0</td>
+                <td class="cn" id="${p}-wl-s">0</td>
+                ${extraCols.map(()=>'<td></td>').join('')}
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- D: 12-WEEK SUMMARY -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-tag">Section D</span><span class="sec-title">12-Week Summary (Auto-Computed from Planner)</span></div>
+      <div class="sum-tbl-wrap">
+        <table class="sum-tbl">
+          <thead><tr>
+            <th>Activity</th>
+            <th>W1</th><th>W2</th><th>W3</th><th>W4</th><th>W5</th><th>W6</th>
+            <th>W7</th><th>W8</th><th>W9</th><th>W10</th><th>W11</th><th>W12</th>
+            <th>Total</th>
+          </tr></thead>
+          <tbody id="${p}-smry-body"></tbody>
+          <tfoot><tr>
+            <td>Total (Leads)</td>
+            ${Array.from({length:12},(_,i)=>`<td id="${p}-wt-${i+1}">0</td>`).join('')}
+            <td id="${p}-gt">0</td>
+          </tr></tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- E: CONSOLIDATION -->
+    ${consolidationSection}
+
+    <!-- F: CALENDAR -->
+    <div class="sec">
+      <div class="sec-head"><span class="sec-tag">Section ${hasConsolidation?'F':'E'}</span><span class="sec-title">90-Day Calendar View</span></div>
+      <div class="card">
+        <div id="${p}-cal"><p style="color:var(--muted);font-size:.82rem">Set a start date in Section B to display the calendar.</p></div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <div class="form-actions-group">
+        <button class="btn bto" onclick="clearPlan('${p}')">Clear All</button>
+        <button class="btn bto" onclick="loadSavedPlan()">Load Saved Plan</button>
+      </div>
+      <button class="btn btp" onclick="savePlan()">Save &amp; Submit Plan</button>
+    </div>
+    <div style="margin-top:1rem;padding:.875rem 1.1rem;background:var(--sky);border-radius:3px;border:1px solid var(--border);font-size:.72rem;color:var(--muted);font-style:italic;text-align:center">
+      "If you know your numbers, you can control your results." — Gutguard Operations
+    </div>`;
+}
+
+/* ══════════════════════════════════════════
+   PLANNER
+══════════════════════════════════════════ */
+function gotoWeek(w){
+  curWeek=Math.max(1,Math.min(12,w));
+  renderPlanner(curType); updateDots(curType);
+}
+
+function renderPlanner(type){
+  var p=type;
+  var lbl=document.getElementById(p+'-wl'); if(lbl) lbl.textContent='Week '+curWeek;
+  var ft=document.querySelector('#'+p+'-ptbl tfoot td:first-child'); if(ft) ft.textContent='Week '+curWeek+' Total';
+  var acts=ACTIVITIES[type]||[], extraCols=EXTRA_COLS[type]||[];
+  var tbody=document.getElementById(p+'-pbdy'); if(!tbody)return;
+  tbody.innerHTML='';
+  if(!wkData[type][curWeek]) wkData[type][curWeek]={};
+  var wk=wkData[type][curWeek];
+
+  acts.forEach(function(act){
+    if(!wk[act]) wk[act]={leads:'',att:'',pi:'',sales:'',date:''};
+    var row=document.createElement('tr');
+    var tdAct=document.createElement('td'); tdAct.className='ta'; tdAct.textContent=act; row.appendChild(tdAct);
+    var tdD=document.createElement('td'); tdD.className='td-d';
+    var inpD=document.createElement('input'); inpD.type='date'; inpD.value=wk[act].date||'';
+    inpD.onchange=function(){wk[act].date=this.value;rebuildCalEvts(type);renderCal(type);};
+    tdD.appendChild(inpD); row.appendChild(tdD);
+    ['leads','att','pi','sales'].forEach(function(col){
+      var td=document.createElement('td'); td.className='tn';
+      var inp=document.createElement('input'); inp.type='number'; inp.min='0'; inp.placeholder='0';
+      inp.value=wk[act][col]||'';
+      inp.oninput=function(){wk[act][col]=this.value;calcWeekTotals(type);calcAllTotals(type);renderSummaryTbl(type);};
+      td.appendChild(inp); row.appendChild(td);
+    });
+    extraCols.forEach(function(ec){
+      if(!wk[act][ec.key]) wk[act][ec.key]='';
+      var td=document.createElement('td'); td.className='tt';
+      var inp=document.createElement('input'); inp.type='text'; inp.placeholder='—'; inp.value=wk[act][ec.key];
+      inp.oninput=function(){wk[act][ec.key]=this.value;};
+      td.appendChild(inp); row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  });
+  calcWeekTotals(type);
+}
+
+function calcWeekTotals(type){
+  var p=type, wk=wkData[type][curWeek]||{}, t={l:0,a:0,p:0,s:0};
+  Object.values(wk).forEach(function(r){t.l+=parseInt(r.leads)||0;t.a+=parseInt(r.att)||0;t.p+=parseInt(r.pi)||0;t.s+=parseInt(r.sales)||0;});
+  Object.keys(t).forEach(function(k){var el=document.getElementById(p+'-wl-'+k);if(el)el.textContent=t[k];});
+}
+
+function calcAllTotals(type){
+  var p=type, grand={leads:0,att:0,pi:0,sales:0};
+  for(var w=1;w<=12;w++){var wk=wkData[type][w]||{};Object.values(wk).forEach(function(r){grand.leads+=parseInt(r.leads)||0;grand.att+=parseInt(r.att)||0;grand.pi+=parseInt(r.pi)||0;grand.sales+=parseInt(r.sales)||0;});}
+  var map={ml:grand.leads,ma:grand.att,mp:grand.pi,ms:grand.sales};
+  Object.keys(map).forEach(function(k){var el=document.getElementById(p+'-'+k);if(el)el.textContent=map[k];});
+  computeProjections(type);
+}
+
+function updateDots(type){
+  var p=type, container=document.getElementById(p+'-dots'); if(!container)return;
+  container.innerHTML='';
+  for(var w=1;w<=12;w++){
+    var hasData=false, wk=wkData[type][w]||{};
+    Object.values(wk).forEach(function(r){if((parseInt(r.leads)||0)+(parseInt(r.pi)||0)+(parseInt(r.sales)||0)>0)hasData=true;});
+    var dot=document.createElement('div');
+    dot.className='wk-dot'+(w===curWeek?' active':'')+(hasData?' has-data':'');
+    dot.textContent=w;
+    (function(wNum){dot.onclick=function(){gotoWeek(wNum);};})(w);
+    container.appendChild(dot);
+  }
+}
+
+/* ══════════════════════════════════════════
+   SUMMARY TABLE
+══════════════════════════════════════════ */
+function renderSummaryTbl(type){
+  var p=type, acts=ACTIVITIES[type]||[], tbody=document.getElementById(p+'-smry-body'); if(!tbody)return;
+  tbody.innerHTML='';
+  var gpw=Array(12).fill(0), gt=0;
+  acts.forEach(function(act){
+    var tr=document.createElement('tr');
+    var tdA=document.createElement('td'); tdA.textContent=act; tr.appendChild(tdA);
+    var actTotal=0;
+    for(var w=1;w<=12;w++){
+      var r=(wkData[type][w]||{})[act]||{}, v=parseInt(r.leads)||0;
+      var td=document.createElement('td'); td.textContent=v||'—';
+      if(v>0){td.style.fontWeight='600';td.style.color='var(--navy)';}else{td.style.color='#C0CCE0';}
+      tr.appendChild(td); actTotal+=v; gpw[w-1]+=v; gt+=v;
+    }
+    var tdT=document.createElement('td'); tdT.textContent=actTotal||'—';
+    tdT.style.fontWeight='700'; tdT.style.color=actTotal?'var(--navy)':'#C0CCE0';
+    tr.appendChild(tdT); tbody.appendChild(tr);
+  });
+  for(var w=1;w<=12;w++){var el=document.getElementById(p+'-wt-'+w);if(el)el.textContent=gpw[w-1]||0;}
+  var gel=document.getElementById(p+'-gt'); if(gel)gel.textContent=gt||0;
+  updateDots(type);
+}
+
+/* ══════════════════════════════════════════
+   CALENDAR
+══════════════════════════════════════════ */
+function rebuildCalEvts(type){
+  calEvts[type]={};
+  for(var w=1;w<=12;w++){var wk=wkData[type][w]||{};Object.keys(wk).forEach(function(a){var d=wk[a].date;if(d){if(!calEvts[type][d])calEvts[type][d]=[];if(!calEvts[type][d].includes(a))calEvts[type][d].push(a);}});}
+}
+function renderCal(type){
+  var el=document.getElementById(type+'-cs'), out=document.getElementById(type+'-cal');
+  if(!el||!el.value||!out)return;
+  rebuildCalEvts(type);
+  var start=new Date(el.value+'T00:00:00'), today=new Date(); today.setHours(0,0,0,0);
+  var html='',month=-1,cur=new Date(start);
+  while((cur-start)/86400000<90){
+    if(cur.getMonth()!==month){
+      if(month!==-1)html+='</div>';
+      month=cur.getMonth();
+      html+=`<div class="cal-mth">${cur.toLocaleString('default',{month:'long',year:'numeric'})}</div><div class="cal-grid">`;
+      ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>{html+=`<div class="cal-hd">${d}</div>`;});
+      for(var e=0;e<cur.getDay();e++)html+='<div class="cal-d emp"></div>';
+    }
+    var ds=cur.toISOString().split('T')[0];
+    var isT=cur.getTime()===today.getTime(), hasE=calEvts[type][ds]&&calEvts[type][ds].length>0;
+    html+=`<div class="cal-d${isT?' today':''}${hasE?' hev':''}" title="${hasE?calEvts[type][ds].join(', '):''}"><span>${cur.getDate()}</span>${hasE?'<div class="ddot"></div>':''}</div>`;
+    cur.setDate(cur.getDate()+1);
+  }
+  html+='</div>'; out.innerHTML=html;
+}
+
+/* ══════════════════════════════════════════
+   PROJECTED TARGETS
+══════════════════════════════════════════ */
+function onTargetChange(p){
+  targets[p]={pi:parseInt(document.getElementById(p+'-tgt-pi')&&document.getElementById(p+'-tgt-pi').value)||0,
+              sales:parseInt(document.getElementById(p+'-tgt-sales')&&document.getElementById(p+'-tgt-sales').value)||0};
+  computeProjections(p);
+}
+
+function computeProjections(type){
+  var p=type;
+  var tgtPi=targets[type]&&targets[type].pi||0;
+  var tgtSales=targets[type]&&targets[type].sales||0;
+  var reqAtt=tgtPi*5, reqLeads=reqAtt*4;
+  var piWk=tgtPi/12, salWk=tgtSales/12, leadsWk=reqLeads/12, leadsDay=reqLeads/90;
+  function fmt(n){return n>0?Math.round(n).toLocaleString():'—';}
+  function fmtD(n){return n>0?n.toFixed(1):'—';}
+  function e(id){return document.getElementById(id);}
+  if(e(p+'-der-att'))e(p+'-der-att').textContent=tgtPi?reqAtt.toLocaleString():'—';
+  if(e(p+'-der-leads'))e(p+'-der-leads').textContent=tgtPi?reqLeads.toLocaleString():'—';
+  if(e(p+'-der-wkpi'))e(p+'-der-wkpi').textContent=tgtPi?fmtD(piWk):'—';
+  if(e(p+'-der-wksales'))e(p+'-der-wksales').textContent=tgtSales?'₱'+Math.round(salWk).toLocaleString():'—';
+  if(e(p+'-der-wkleads'))e(p+'-der-wkleads').textContent=tgtPi?fmtD(leadsWk):'—';
+  if(e(p+'-der-dayleads'))e(p+'-der-dayleads').textContent=tgtPi?fmtD(leadsDay):'—';
+
+  // Gather actuals
+  var actPi=[], actSales=[];
+  for(var w=1;w<=12;w++){
+    var wk=wkData[type][w]||{}, pi=0, sales=0;
+    Object.values(wk).forEach(function(r){pi+=parseInt(r.pi)||0; sales+=parseInt(r.sales)||0;});
+    actPi.push(pi); actSales.push(sales);
+  }
+  var totalActPi=actPi.reduce((a,b)=>a+b,0), totalActSales=actSales.reduce((a,b)=>a+b,0);
+  var cumPi=0, cumSales=0;
+  var tbody=document.getElementById(p+'-proj-body'); if(!tbody)return;
+  tbody.innerHTML='';
+
+  for(var w=1;w<=12;w++){
+    var wTgtPi=tgtPi?Math.round(piWk*w):null, wTgtSales=tgtSales?Math.round(salWk*w):null;
+    cumPi+=actPi[w-1]; cumSales+=actSales[w-1];
+    var piPct=wTgtPi&&wTgtPi>0?Math.round((cumPi/wTgtPi)*100):null;
+    var sPct=wTgtSales&&wTgtSales>0?Math.round((cumSales/wTgtSales)*100):null;
+    function pClass(pct){return pct===null?'':pct>=100?'over':pct>=85?'on':'under';}
+    function pText(pct){return pct===null?'—':pct+'%';}
+    function barHtml(pct){if(pct===null)return '';var w=Math.min(pct,100),cls=pct>=100?'over':pct>=85?'on':'under';return `<div class="pbar"><div class="pbar-f ${cls}" style="width:${w}%"></div></div>`;}
+    var tr=document.createElement('tr');
+    tr.innerHTML=`<td style="text-align:left;font-weight:700;font-size:.75rem;color:var(--navy);background:var(--sky);border-right:2px solid var(--border);padding-left:10px;white-space:nowrap">W${w}</td>
+      <td class="td-tgt">${wTgtPi!==null?wTgtPi.toLocaleString():'—'}</td>
+      <td class="td-act">${cumPi>0?cumPi.toLocaleString():'—'}</td>
+      <td class="td-pct ${pClass(piPct)}">${pText(piPct)}${barHtml(piPct)}</td>
+      <td class="td-tgt">${wTgtSales!==null?'₱'+wTgtSales.toLocaleString():'—'}</td>
+      <td class="td-act">${cumSales>0?'₱'+cumSales.toLocaleString():'—'}</td>
+      <td class="td-pct ${pClass(sPct)}">${pText(sPct)}${barHtml(sPct)}</td>`;
+    tbody.appendChild(tr);
+  }
+
+  function set(id,val){var el=document.getElementById(id);if(el)el.textContent=val;}
+  set(p+'-pf-tpi',tgtPi?tgtPi.toLocaleString():'—');
+  set(p+'-pf-api',totalActPi?totalActPi.toLocaleString():'0');
+  if(e(p+'-pf-vpi')&&tgtPi){var pct=Math.round((totalActPi/tgtPi)*100);e(p+'-pf-vpi').textContent=pct+'%';e(p+'-pf-vpi').style.color=pct>=100?'#4ADA8A':pct>=85?'var(--gold)':'#FF8A8A';}else set(p+'-pf-vpi','—');
+  set(p+'-pf-ts',tgtSales?'₱'+tgtSales.toLocaleString():'—');
+  set(p+'-pf-as',totalActSales?'₱'+totalActSales.toLocaleString():'0');
+  if(e(p+'-pf-vs')&&tgtSales){var spct=Math.round((totalActSales/tgtSales)*100);e(p+'-pf-vs').textContent=spct+'%';e(p+'-pf-vs').style.color=spct>=100?'#4ADA8A':spct>=85?'var(--gold)':'#FF8A8A';}else set(p+'-pf-vs','—');
+
+  var gapPi=tgtPi?Math.max(0,tgtPi-totalActPi):null, gapS=tgtSales?Math.max(0,tgtSales-totalActSales):null;
+  set(p+'-sum-tpi',tgtPi?tgtPi.toLocaleString():'—');
+  set(p+'-sum-tpi-n',tgtPi?'90-day pay-in goal':'Set a target above');
+  set(p+'-sum-api',totalActPi.toLocaleString());
+  set(p+'-sum-api-n',tgtPi?Math.round((totalActPi/tgtPi)*100)+'% of target achieved':'from planner');
+  set(p+'-sum-gpi',gapPi!==null?(gapPi>0?gapPi.toLocaleString():'✓ Achieved!'):'—');
+  set(p+'-sum-gpi-n',gapPi===0?'Target fully met!':gapPi>0?'more pay-ins needed':'remaining');
+  set(p+'-sum-ts',tgtSales?'₱'+tgtSales.toLocaleString():'—');
+  set(p+'-sum-ts-n',tgtSales?'90-day sales goal':'Set a target above');
+  set(p+'-sum-as',totalActSales?'₱'+totalActSales.toLocaleString():'₱0');
+  set(p+'-sum-as-n',tgtSales?Math.round((totalActSales/tgtSales)*100)+'% of target achieved':'from planner');
+  set(p+'-sum-gs',gapS!==null?(gapS>0?'₱'+gapS.toLocaleString():'✓ Achieved!'):'—');
+  set(p+'-sum-gs-n',gapS===0?'Target fully met!':gapS>0?'more sales needed':'remaining');
+}
+
+/* ══════════════════════════════════════════
+   CONSOLIDATION
+══════════════════════════════════════════ */
+function renderConsolidation(type){
+  var p=type;
+  var container=document.getElementById(p+'-con-container'); if(!container)return;
+  var members=subMembers[type]||[];
+  var subRole=SUB_ROLES[type];
+  var totalPi=0,totalSales=0,totalLeads=0,totalAtt=0;
+
+  var html='<div class="con-grid">';
+  members.forEach(function(m,i){
+    totalPi+=m.pi||0; totalSales+=m.sales||0; totalLeads+=m.leads||0; totalAtt+=m.att||0;
+    var piPct= m.piTarget&&m.piTarget>0?Math.min(100,Math.round((m.pi/m.piTarget)*100)):0;
+    html+=`<div class="con-card">
+      <div class="cc-role">${subRole}</div>
+      <div class="cc-name">${m.name||'(No Name)'}</div>
+      <div class="cc-nums">
+        <div class="cc-num"><span class="n">${m.leads||0}</span><span class="l">Leads</span></div>
+        <div class="cc-num"><span class="n">${m.att||0}</span><span class="l">Att.</span></div>
+        <div class="cc-num"><span class="n">${m.pi||0}</span><span class="l">Pay-ins</span></div>
+        <div class="cc-num"><span class="n">${m.sales?'₱'+(m.sales).toLocaleString():'0'}</span><span class="l">Sales</span></div>
+      </div>
+      <div class="cc-bar">
+        <div class="cc-pct-lbl"><span>Pay-in Progress</span><span>${m.pi||0} / ${m.piTarget||'?'}</span></div>
+        <div class="cc-pbar"><div class="cc-pbar-f" style="width:${piPct}%"></div></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:.5rem">
+        <button class="btn bto btn-sm" style="flex:1" onclick="editSubMember(${i})">Edit</button>
+        <button class="btn btn-sm" style="background:#FDE8E8;color:var(--danger);border:1px solid #F0B8B8;flex:1" onclick="removeSubMember(${i})">Remove</button>
+      </div>
+    </div>`;
+  });
+
+  // Add new card
+  html+=`<div class="cc-add-btn" onclick="openAddModal('${type}')">+ Add ${subRole}</div>`;
+  html+='</div>';
+  container.innerHTML=html;
+
+  // Show totals if members exist
+  var totRow=document.getElementById(p+'-con-total');
+  if(totRow){
+    if(members.length>0){
+      totRow.style.display='grid';
+      function set(id,val){var el=document.getElementById(id);if(el)el.textContent=val;}
+      set(p+'-con-leads',totalLeads.toLocaleString());
+      set(p+'-con-att',totalAtt.toLocaleString());
+      set(p+'-con-pi',totalPi.toLocaleString());
+      set(p+'-con-sales','₱'+totalSales.toLocaleString());
+    } else {
+      totRow.style.display='none';
+    }
+  }
+}
+
+/* MODAL */
+var modalEditIdx=-1, modalType=null;
+function openAddModal(type){
+  modalEditIdx=-1; modalType=type;
+  document.getElementById('modal-title').textContent='Add '+SUB_ROLES[type];
+  document.getElementById('m-inp-name').value='';
+  document.getElementById('m-inp-pi').value='';
+  document.getElementById('m-inp-sales').value='';
+  document.getElementById('m-inp-leads').value='';
+  document.getElementById('m-inp-att').value='';
+  document.getElementById('m-inp-evt').value='';
+  document.getElementById('modal').classList.add('active');
+}
+function editSubMember(idx){
+  modalEditIdx=idx; modalType=curType;
+  var m=subMembers[curType][idx];
+  document.getElementById('modal-title').textContent='Edit '+SUB_ROLES[curType];
+  document.getElementById('m-inp-name').value=m.name||'';
+  document.getElementById('m-inp-pi').value=m.pi||'';
+  document.getElementById('m-inp-sales').value=m.sales||'';
+  document.getElementById('m-inp-leads').value=m.leads||'';
+  document.getElementById('m-inp-att').value=m.att||'';
+  document.getElementById('m-inp-evt').value=m.evt||'';
+  document.getElementById('modal').classList.add('active');
+}
+function closeModal(){document.getElementById('modal').classList.remove('active');}
+function saveSubMember(){
+  var m={
+    name:document.getElementById('m-inp-name').value,
+    role:SUB_ROLES[modalType]||'',
+    pi:parseInt(document.getElementById('m-inp-pi').value)||0,
+    piTarget:parseInt(document.getElementById('m-inp-pi').value)||0,
+    sales:parseInt(document.getElementById('m-inp-sales').value)||0,
+    leads:parseInt(document.getElementById('m-inp-leads').value)||0,
+    att:parseInt(document.getElementById('m-inp-att').value)||0,
+    evt:parseInt(document.getElementById('m-inp-evt').value)||0
+  };
+  if(!m.name){showToast('Please enter a name.');return;}
+  if(modalEditIdx>=0){subMembers[modalType][modalEditIdx]=m;}
+  else{if(!subMembers[modalType])subMembers[modalType]=[];subMembers[modalType].push(m);}
+  closeModal();
+  renderConsolidation(modalType);
+  showToast((modalEditIdx>=0?'Updated: ':'Added: ')+m.name);
+}
+function removeSubMember(idx){
+  if(!confirm('Remove this entry?'))return;
+  subMembers[curType].splice(idx,1);
+  renderConsolidation(curType);
+  showToast('Removed.');
+}
+
+function renderConsolidation(type){
+  var p=type;
+  var container=document.getElementById(p+'-con-container'); if(!container)return;
+  var members=subMembers[type]||[];
+  var linkedChildren=childPlans[type]||[];
+  var subRole=SUB_ROLES[type];
+  var totalPi=0,totalSales=0,totalLeads=0,totalAtt=0;
+  var html='';
+
+  if(linkedChildren.length){
+    html+='<div class="notice n-success" style="margin-bottom:.75rem">Linked child plans found in Supabase. Consolidation totals below are based on actual saved child plans.</div><div class="con-grid">';
+    linkedChildren.forEach(function(child){
+      totalPi+=child.totals.pay_ins||0;
+      totalSales+=child.totals.sales||0;
+      totalLeads+=child.totals.leads||0;
+      totalAtt+=child.totals.attendees||0;
+      var piPct=child.target_pi&&child.target_pi>0?Math.min(100,Math.round(((child.totals.pay_ins||0)/child.target_pi)*100)):0;
+      html+=`<div class="con-card">
+        <div class="cc-role">${TYPE_LABEL[child.role_type]||subRole}</div>
+        <div class="cc-name">${child.full_name||'(No Name)'}</div>
+        <div class="cc-nums">
+          <div class="cc-num"><span class="n">${child.totals.leads||0}</span><span class="l">Leads</span></div>
+          <div class="cc-num"><span class="n">${child.totals.attendees||0}</span><span class="l">Att.</span></div>
+          <div class="cc-num"><span class="n">${child.totals.pay_ins||0}</span><span class="l">Pay-ins</span></div>
+          <div class="cc-num"><span class="n">${child.totals.sales?'â‚±'+(child.totals.sales).toLocaleString():'0'}</span><span class="l">Sales</span></div>
+        </div>
+        <div class="cc-bar">
+          <div class="cc-pct-lbl"><span>Pay-in Progress</span><span>${child.totals.pay_ins||0} / ${child.target_pi||'?'}</span></div>
+          <div class="cc-pbar"><div class="cc-pbar-f" style="width:${piPct}%"></div></div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+    if(members.length){html+='<div class="notice n-warn" style="margin-top:.75rem">Manual fallback entries are shown below. Linked child plans are the primary consolidation source.</div>';}
+  }
+
+  if(!linkedChildren.length||members.length){
+    html+='<div class="con-grid">';
+    members.forEach(function(m,i){
+      if(!linkedChildren.length){
+        totalPi+=m.pi||0; totalSales+=m.sales||0; totalLeads+=m.leads||0; totalAtt+=m.att||0;
+      }
+      var piPct= m.piTarget&&m.piTarget>0?Math.min(100,Math.round((m.pi/m.piTarget)*100)):0;
+      html+=`<div class="con-card">
+        <div class="cc-role">${subRole}</div>
+        <div class="cc-name">${m.name||'(No Name)'}</div>
+        <div class="cc-nums">
+          <div class="cc-num"><span class="n">${m.leads||0}</span><span class="l">Leads</span></div>
+          <div class="cc-num"><span class="n">${m.att||0}</span><span class="l">Att.</span></div>
+          <div class="cc-num"><span class="n">${m.pi||0}</span><span class="l">Pay-ins</span></div>
+          <div class="cc-num"><span class="n">${m.sales?'â‚±'+(m.sales).toLocaleString():'0'}</span><span class="l">Sales</span></div>
+        </div>
+        <div class="cc-bar">
+          <div class="cc-pct-lbl"><span>Pay-in Progress</span><span>${m.pi||0} / ${m.piTarget||'?'}</span></div>
+          <div class="cc-pbar"><div class="cc-pbar-f" style="width:${piPct}%"></div></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:.5rem">
+          <button class="btn bto btn-sm" style="flex:1" onclick="editSubMember(${i})">Edit</button>
+          <button class="btn btn-sm" style="background:#FDE8E8;color:var(--danger);border:1px solid #F0B8B8;flex:1" onclick="removeSubMember(${i})">Remove</button>
+        </div>
+      </div>`;
+    });
+    html+=`<div class="cc-add-btn" onclick="openAddModal('${type}')">+ Add ${subRole}</div></div>`;
+  }
+
+  container.innerHTML=html;
+
+  var totRow=document.getElementById(p+'-con-total');
+  if(totRow){
+    if(linkedChildren.length>0||members.length>0){
+      totRow.style.display='grid';
+      function set(id,val){var el=document.getElementById(id);if(el)el.textContent=val;}
+      set(p+'-con-leads',totalLeads.toLocaleString());
+      set(p+'-con-att',totalAtt.toLocaleString());
+      set(p+'-con-pi',totalPi.toLocaleString());
+      set(p+'-con-sales','â‚±'+totalSales.toLocaleString());
+    } else {
+      totRow.style.display='none';
+    }
+  }
+}
+
+/* MISC */
+function tog(el){el.classList.toggle('checked');}
+function clearPlan(type){
+  if(!confirm('Clear all current form data? This will not delete anything already saved in Supabase.'))return;
+  resetInMemoryPlan(type);
+  childPlans[type]=[];
+  clearVisibleForm(type);
+  planMeta[type]=makePlanMeta();
+  curWeek=1;
+  renderPlanner(type); renderSummaryTbl(type); renderCal(type); calcAllTotals(type); computeProjections(type); updateDots(type); renderConsolidation(type);
+  updateSaveStatus(type,{message:'Form cleared locally. Use Load Saved Plan to restore the last Supabase copy.',tone:'n-info'});
+  showToast('Form cleared locally. Saved Supabase data was not deleted.');
+}
+async function loadSavedPlan(silent, explicitPlanId){
+  if(!curType)return;
+  if(!(window.GutguardPlanApi&&window.GutguardPlanApi.isConfigured&&window.GutguardPlanApi.isConfigured())){
+    updateSaveStatus(curType);
+    if(!silent)showToast('Configure Supabase before loading a saved plan.');
+    return;
+  }
+  var ref=explicitPlanId?{planId:explicitPlanId}:(window.GutguardPlanModel&&window.GutguardPlanModel.getStoredPlanRef?window.GutguardPlanModel.getStoredPlanRef(curType):null);
+  if(!ref||!ref.planId){
+    updateSaveStatus(curType);
+    if(!silent)showToast('No saved plan was found for this role on this device.');
+    return;
+  }
+  updateSaveStatus(curType,{message:'Loading saved plan from Supabase...',tone:'n-info'});
+  var loaded=await window.GutguardPlanApi.loadPlanFromSupabase(ref.planId);
+  await populateParentOptions(curType, loaded.parent_plan_id||'');
+  window.GutguardPlanModel.hydratePlanData(curType,loaded);
+  planMeta[curType]={planId:loaded.id,status:loaded.status||'submitted',lastSavedAt:loaded.updated_at||loaded.created_at||null};
+  if(window.GutguardPlanModel&&window.GutguardPlanModel.rememberPlanRef)window.GutguardPlanModel.rememberPlanRef(curType,loaded);
+  await refreshChildPlans(curType);
+  updateSaveStatus(curType);
+  if(!silent)showToast('Loaded "'+(loaded.full_name||TYPE_LABEL[curType])+'".');
+}
+async function savePlan(){
+  if(!curType)return;
+  try{
+    updateSaveStatus(curType,{message:'Saving plan to Supabase...',tone:'n-info'});
+    var plan=window.GutguardPlanModel.collectPlanData(curType,planMeta[curType]);
+    plan.status='submitted';
+    window.GutguardPlanModel.validatePlanData(plan);
+    var saved=await window.GutguardPlanApi.savePlanToSupabase(plan);
+    planMeta[curType]={planId:saved.id,status:saved.status||'submitted',lastSavedAt:saved.updated_at||saved.created_at||new Date().toISOString()};
+    if(window.GutguardPlanModel&&window.GutguardPlanModel.rememberPlanRef)window.GutguardPlanModel.rememberPlanRef(curType,saved);
+    await refreshChildPlans(curType);
+    refreshSavedPlans();
+    updateSaveStatus(curType);
+    showToast('"'+(saved.full_name||'Plan')+'" saved to Supabase.');
+  }catch(err){
+    updateSaveStatus(curType,{message:'Save failed. '+((err&&err.message)?err.message:'Unknown error.'),tone:'n-danger'});
+    showToast((err&&err.message)?err.message:'Failed to save plan.');
+  }
+}
+bootstrapAuthState();
+if(window.GutguardSupabase&&window.GutguardSupabase.onAuthStateChange){
+  window.GutguardSupabase.onAuthStateChange(function(_event, session){
+    currentUser=session&&session.user?session.user:null;
+    renderAuthState();
+    refreshSavedPlans();
+    if(curType){
+      populateParentOptions(curType);
+      refreshChildPlans(curType);
+    }
+  });
+}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+</body>
+</html>
